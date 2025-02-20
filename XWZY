@@ -1,0 +1,313 @@
+NOCOLOR='\033[0m';
+RED='\033[0;31m';
+GREEN='\033[0;32m';
+ORANGE='\033[0;33m';
+BLUE='\033[0;34m';
+PURPLE='\033[0;35m';
+CYAN='\033[0;36m';
+LIGHTGRAY='\033[0;37m';
+DARKGRAY='\033[1;30m';
+LIGHTRED='\033[1;31m';
+LIGHTGREEN='\033[1;32m';
+YELLOW='\033[1;33m';
+LIGHTBLUE='\033[1;34m';
+LIGHTPURPLE='\033[1;35m';
+LIGHTCYAN='\033[1;36m';
+WHITE='\033[1;37m';
+
+source script_folder/banner;
+echo -e "${LIGHTRED}和平解包打包工具: ${LIGHTGREEN}向往自由工具${NOCOLOR}";
+echo -e "${LIGHTCYAN}------------------ ${NOCOLOR}";
+chmod +x script_folder/unpack.bms;
+chmod +x script_folder/repack.bms;
+
+if [[ -d "/sdcard/Download/obb_folder" ]]; then
+  echo "";
+else
+  mkdir /sdcard/Download/obb_folder;
+fi;
+
+if [[ -d "/sdcard/Download/repack_folder" ]]; then
+  echo "";
+else
+  mkdir /sdcard/Download/repack_folder;
+fi;
+
+if [[ -d "/sdcard/Download/output_folder" ]]; then
+  echo "";
+else
+  mkdir /sdcard/Download/output_folder;
+fi;
+
+obb_folder="$HOME/PakTool/obb_folder";
+output_folder="/storage/emulated/0/Download/output_folder";
+repack_folder="/sdcard/Download/repack_folder";
+
+function TG {
+  TELEGRAM_URL="https://t.me/+VgdD6EwMppk0YTU1";
+  xdg-open "$TELEGRAM_URL";
+  echo "Join Telegram";
+};
+
+unpacking32 () {
+  /data/user/0/com.termux/files/home/XWZY/paks -a /storage/emulated/0/Download/obb_folder/$(basename "$selected_file") /storage/emulated/0/Download/output_folder;
+  python $HOME/XWZY/uexp.py;
+};
+
+unpacking64 () {
+  qemu-i386 $PREFIX/share/quickbms/quickbms_4gb_files script_folder/unpack.bms $obb_folder/$(basename "$selected_file") $output_folder;
+  python $HOME/XWZY/uexp.py;
+};
+
+repacking32 () {
+  /data/user/0/com.termux/files/home/XWZY/paks -a -r $selected_file /sdcard/Download/repack_folder;
+};
+
+repacking232 () {
+  python $HOME/XWZY/打包.py;
+  qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r script_folder/repack.bms $selected_file /sdcard/Download/repack_folder;
+};
+
+repacking64 () {
+  python $HOME/XWZY/打包.py;
+  qemu-i386 $PREFIX/share/quickbms/quickbms_4gb_files -w -r script_folder/repack.bms $selected_file /sdcard/Download/repack_folder;
+};
+
+repacking264 () {
+  python $HOME/XWZY/打包.py;
+  qemu-i386 $PREFIX/share/quickbms/quickbms_4gb_files -w -r -r script_folder/repack.bms $selected_file /sdcard/Download/repack_folder;
+};
+
+function unpack32 {
+  prompt="输入你的选择:";
+  options=($(find /sdcard/Download/obb_folder -name "*.pak" -o -name "*.obb"));
+  PS3="$prompt ";
+  select opt in "${options[@]}" "Quit"; do
+    if (( REPLY == 1 + ${#options[@]} )); then
+      break;
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+      selected_file="${options[$REPLY-1]}";
+      echo "You picked $selected_file which is file $REPLY";
+      mkdir -p "$obb_folder";
+      cp "$selected_file" "$obb_folder/";
+      unpacking32;
+      rm -rf $obb_folder;
+      break;
+    else
+      echo "Invalid option. Try another one.";
+    fi;
+  done;
+};
+
+function unpack64 {
+  prompt="输入你的选择:";
+  options=($(find /sdcard/Download/obb_folder -name "*.pak" -o -name "*.obb"));
+  PS3="$prompt ";
+  select opt in "${options[@]}" "Quit"; do
+    if (( REPLY == 1 + ${#options[@]} )); then
+      break;
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+      selected_file="${options[$REPLY-1]}";
+      echo "You picked $selected_file which is file $REPLY";
+      mkdir -p "$obb_folder";
+      cp "$selected_file" "$obb_folder/";
+      unpacking64;
+      rm -rf $obb_folder;
+      break;
+    else
+      echo "Invalid option. Try another one.";
+    fi;
+  done;
+};
+
+function repack32 {
+  prompt="输入你的选择 :";
+  options=($(find /sdcard/Download/obb_folder -name "*.pak" -o -name "*.obb"));
+  PS3="$prompt ";
+  select opt in "${options[@]}" "Quit"; do
+    if (( REPLY == 1 + ${#options[@]} )); then
+      break;
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+      selected_file="${options[$REPLY-1]}";
+      echo "You picked $selected_file which is file $REPLY";
+      repacking32;
+      break;
+    else
+      echo "Invalid option. Try another one.";
+    fi;
+  done;
+};
+
+function repack232 {
+  prompt="输入你的选择 :";
+  options=($(find /sdcard/Download/obb_folder -name "*.pak" -o -name "*.obb"));
+  PS3="$prompt ";
+  select opt in "${options[@]}" "Quit"; do
+    if (( REPLY == 1 + ${#options[@]} )); then
+      break;
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+      selected_file="${options[$REPLY-1]}";
+      echo "You picked $selected_file which is file $REPLY";
+      repacking232;
+      break;
+    else
+      echo "Invalid option. Try another one.";
+    fi;
+  done;
+};
+
+function repack64 {
+  prompt="输入你的选择 :";
+  options=($(find /sdcard/Download/obb_folder -name "*.pak" -o -name "*.obb"));
+  PS3="$prompt ";
+  select opt in "${options[@]}" "Quit"; do
+    if (( REPLY == 1 + ${#options[@]} )); then
+      break;
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+      selected_file="${options[$REPLY-1]}";
+      echo "You picked $selected_file which is file $REPLY";
+      repacking64;
+      break;
+    else
+      echo "Invalid option. Try another one.";
+    fi;
+  done;
+};
+
+function repack264 {
+  prompt="输入你的选择 :";
+  options=($(find /sdcard/Download/obb_folder -name "*.pak" -o -name "*.obb"));
+  PS3="$prompt ";
+  select opt in "${options[@]}" "Quit"; do
+    if (( REPLY == 1 + ${#options[@]} )); then
+      break;
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+      selected_file="${options[$REPLY-1]}";
+      echo "You picked $selected_file which is file $REPLY";
+      repacking264;
+      break;
+    else
+      echo "Invalid option. Try another one.";
+    fi;
+  done;
+};
+
+function unpackobb {
+  options=("解包PUBG" "解包和平精英" "退出");
+  select opt in "${options[@]}"; do
+    case $opt in
+      "解包PUBG")
+        unpack32;
+        ;;
+      "解包和平精英")
+        unpack64;
+        ;;
+      "退出")
+        break;
+        ;;
+      *)
+        echo "Invalid option $REPLY";
+        ;;
+    esac;
+  done;
+};
+
+function repackobb32 {
+  options=("开始打包" "打包 𝟮(备用)" "退出");
+  select opt in "${options[@]}"; do
+    case $opt in
+      "开始打包")
+        repack32;
+        ;;
+      "打包 𝟮(备用)")
+        repack232;
+        ;;
+      "退出")
+        break;
+        ;;
+      *)
+        echo "Invalid option $REPLY";
+        ;;
+    esac;
+  done;
+};
+
+function repackobb64 {
+  options=("开始打包" "打包 𝟮(备用)" "退出");
+  select opt in "${options[@]}"; do
+    case $opt in
+      "开始打包")
+        repack64;
+        ;;
+      "打包 𝟮(备用)")
+        repack264;
+        ;;
+      "退出")
+        break;
+        ;;
+      *)
+        echo "Invalid option $REPLY";
+        ;;
+    esac;
+  done;
+};
+
+function repackobb {
+  options=("打包PUBG" "打包和平精英" "退出");
+  select opt in "${options[@]}"; do
+    case $opt in
+      "打包PUBG")
+        repackobb32;
+        ;;
+      "打包和平精英")
+        repackobb64;
+        ;;
+      "退出")
+        break;
+        ;;
+      *)
+        echo "Invalid option $REPLY";
+        ;;
+    esac;
+  done;
+};
+
+function menu {
+  PS3='输入你的选择𝗢𝗡 : ';
+  options=("解包" "打包" "加入工具官方群" "退出");
+  select opt in "${options[@]}"; do
+    case $opt in
+      "解包")
+        unpackobb;
+        ;;
+      "打包")
+        repackobb;
+        ;;
+      "加入官方工具群")
+        TG;
+        ;;
+      "退出")
+        break;
+        ;;
+      *)
+        echo "invalid option $REPLY";
+        ;;
+    esac;
+  done;
+};
+
+PS3='输入你的选择 : ';
+options=("进入工具" "退出");
+select opt in "${options[@]}"; do
+  case $opt in
+    "进入工具")
+      menu;
+      ;;
+    "退出")
+      break;
+      ;;
+    *)
+      echo "invalid option $REPLY";
+      ;;
+  esac;
+done;

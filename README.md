@@ -1,6 +1,10 @@
 此项目开源的是某条狗的工具
 和平精英解包打包工具
+
+git clone https://github.com/xwzy10086/XWZY
+
 cd XWZY
+
 chmod +x XWZY
 
 chmod +x setup
